@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [[ -z "$1" ]]; then PARSER=$0; else PARSER=$1; fi
+
+case $PARSER in
+  *parser)
+    if grep -q future ~/.puppet/puppet.conf 2>/dev/null; then
+      echo "future"
+    else
+      echo "current"
+    fi
+    ;;
+  *current)
+    rm -f ~/.puppet/puppet.conf
+    ;;
+  *future)
+    [[ -d ~/.puppet ]] || mkdir ~/.puppet
+    cat > ~/.puppet/puppet.conf << EOF
+[main]
+    stringify_facts = false
+    parser = future
+EOF
+    ;;
+  *)
+    echo "Usage: $0 <future|current>"
+    exit 1
+    ;;
+esac
+
